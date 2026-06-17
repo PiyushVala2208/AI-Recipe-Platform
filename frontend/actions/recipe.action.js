@@ -133,7 +133,7 @@ export async function getOrGenerateRecipe(formData) {
     // Step 2: Recipe doesn't exist, generate with Gemini
     console.log("🤖 Recipe not found, generating with Gemini...");
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
 You are a professional chef and recipe expert. Generate a detailed recipe for: "${normalizedTitle}"
@@ -263,7 +263,10 @@ Guidelines:
       "portuguese",
       "other",
     ];
-    const rawCuisine = recipeData.cuisine?.toLowerCase().trim().replace(/\s*-\s*/g, "-");
+    const rawCuisine = recipeData.cuisine
+      ?.toLowerCase()
+      .trim()
+      .replace(/\s*-\s*/g, "-");
     const cuisine = validCuisines.includes(rawCuisine) ? rawCuisine : "other";
 
     // Step 3: Fetch image from Unsplash
@@ -332,6 +335,17 @@ Guidelines:
     };
   } catch (error) {
     console.error("❌ Error in getOrGenerateRecipe:", error);
+
+    // Handle Google Generative AI Rate Limits (429)
+    if (error.status === 429 || (error.message && error.message.includes("429"))) {
+      let waitSeconds = 15;
+      const match = error.message.match(/retry in (\d+\.?\d*)s/i);
+      if (match && match[1]) {
+        waitSeconds = Math.ceil(parseFloat(match[1]));
+      }
+      throw new Error(`AI rate limit exceeded. Please wait ${waitSeconds} seconds and try again.`);
+    }
+
     throw new Error(error.message || "Failed to load recipe");
   }
 }
@@ -532,7 +546,7 @@ export async function getRecipesByPantryIngredients() {
 
     console.log("🥘 Finding recipes for ingredients:", ingredients);
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
 You are a professional chef. Given these available ingredients: ${ingredients}

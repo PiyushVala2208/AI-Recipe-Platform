@@ -58,7 +58,7 @@ export async function scanPantryImage(formData) {
     const base64Image = buffer.toString("base64");
 
     // Call Gemini Vision API
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
 You are a professional chef and ingredient recognition expert. Analyze this image of a pantry/fridge and identify all visible food ingredients.
@@ -121,7 +121,23 @@ Rules:
     };
   } catch (error) {
     console.error("Error scanning pantry:", error);
-    throw new Error(error.message || "Failed to scan image");
+
+    // Handle Google Generative AI Rate Limits (429)
+    if (
+      error.status === 429 ||
+      (error.message && error.message.includes("429"))
+    ) {
+      let waitSeconds = 15; // default wait time
+      const match = error.message.match(/retry in (\d+\.?\d*)s/i);
+      if (match && match[1]) {
+        waitSeconds = Math.ceil(parseFloat(match[1]));
+      }
+      throw new Error(
+        `AI rate limit exceeded. Please wait ${waitSeconds} seconds and try again.`,
+      );
+    }
+
+    throw new Error("Failed to scan image. Please try again.");
   }
 }
 

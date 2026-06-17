@@ -9,6 +9,7 @@ import Image from "next/image";
 import { checkUser } from "@/lib/checkUser";
 import { Badge } from "./ui/badge";
 import UserDropdown from "./UserDropdown";
+import NavLinks from "./NavLinks";
 
 export default async function Header() {
   const user = await checkUser();
@@ -31,29 +32,7 @@ export default async function Header() {
         </Link>
 
         {/* Navigation Links */}
-        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-stone-600">
-          <Link
-            href="/dashboard"
-            className="hover:text-orange-600 transition-colors flex gap-1.5 items-center"
-          >
-            <LayoutDashboardIcon className="w-4 h-4" />
-            Dashboard
-          </Link>
-          <Link
-            href="/recipes"
-            className="hover:text-orange-600 transition-colors flex gap-1.5 items-center"
-          >
-            <Cookie className="w-4 h-4" />
-            My Recipes
-          </Link>
-          <Link
-            href="/pantry"
-            className="hover:text-orange-600 transition-colors flex gap-1.5 items-center"
-          >
-            <Refrigerator className="w-4 h-4" />
-            My Pantry
-          </Link>
-        </div>
+        <NavLinks />
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-4">
