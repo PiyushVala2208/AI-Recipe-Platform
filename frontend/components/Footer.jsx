@@ -6,53 +6,54 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-stone-950 border-t border-stone-900 text-stone-400 relative overflow-hidden pt-12 pb-8 px-4 sm:px-6 lg:px-8 w-full">
-      <link
+    <footer className="bg-stone-950 border-t border-stone-900 text-stone-400 relative overflow-hidden pt-16 pb-8 px-4 sm:px-8 w-full">
+       <link
         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap"
         rel="stylesheet"
       />
 
-      <div className="w-full max-w-7xl mx-auto relative z-10 flex flex-col items-center overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto relative z-10 flex flex-col items-center isolation-auto">
         <div className="mb-6 flex items-center justify-center">
-          <Image
-            src="/orange-logo.png"
-            alt="Servd Logo"
-            width={80}
-            height={80}
-            className="h-auto object-contain transition-transform duration-300 hover:scale-105"
-            priority
-          />
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+            <Image
+              src="/orange-logo.png"
+              alt="Servd Logo"
+              fill
+              className="object-contain transition-transform duration-300 hover:scale-105"
+              priority
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 mb-8 text-center w-full">
-          <p className="text-sm text-stone-500 font-light max-w-xs sm:max-w-sm tracking-wide">
+        <div className="flex flex-col items-center gap-4 mb-8 text-center w-full max-w-md px-2">
+          <p className="text-xs sm:text-sm text-stone-500 font-light tracking-wide leading-relaxed">
             Elevating modern culinary workflows with cinematic AI precision.
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-6 text-xs sm:text-sm font-medium text-stone-400 mb-8 w-full">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs sm:text-sm font-medium text-stone-400 mb-12 w-full max-w-sm px-4">
           <Link
             href="/dashboard"
-            className="hover:text-orange-500 transition-colors"
+            className="hover:text-orange-500 transition-colors duration-300"
           >
             Dashboard
           </Link>
           <Link
             href="/recipes"
-            className="hover:text-orange-500 transition-colors"
+            className="hover:text-orange-500 transition-colors duration-300"
           >
             Recipes
           </Link>
           <Link
             href="/pantry"
-            className="hover:text-orange-500 transition-colors"
+            className="hover:text-orange-500 transition-colors duration-300"
           >
             Pantry
           </Link>
         </div>
 
-        <div className="w-full relative flex items-center justify-center select-none mb-8 overflow-hidden">
-          <h2 className="text-[18vw] font-black tracking-wide uppercase leading-none font-sans text-center select-none pointer-events-none bg-linear-to-b from-stone-800/60 via-stone-800/22 to-transparent bg-clip-text text-transparent p-1">
+        <div className="w-full relative flex items-center justify-center select-none mb-6 overflow-hidden max-w-full">
+          <h2 className="text-[18vw] xl:text-[220px] 2xl:text-[260px] font-black tracking-tighter uppercase leading-none font-sans text-center select-none pointer-events-none bg-linear-to-b from-stone-800/60 via-stone-800/22 to-transparent bg-clip-text text-transparent p-1 whitespace-nowrap">
             SERVD
           </h2>
         </div>
