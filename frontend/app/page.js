@@ -192,7 +192,7 @@ export default async function Home() {
                 <div className="flex gap-4 sm:gap-6 items-start">
                   <Badge
                     variant="outline"
-                    className="text-4xl sm:text-5xl font-extrabold text-orange-500 border-none bg-transparent p-0 sm:p-1 h-auto leading-none shrink-0"
+                    className="text-4xl sm:text-5xl p-2 font-extrabold text-orange-500 border-none bg-transparent sm:p-1 h-auto leading-none shrink-0"
                   >
                     {item.step}
                   </Badge>

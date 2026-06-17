@@ -53,7 +53,7 @@ export default function Footer() {
         </div>
 
         <div className="w-full relative flex items-center justify-center select-none mb-6 overflow-hidden max-w-full">
-          <h2 className="text-[18vw] xl:text-[220px] 2xl:text-[260px] font-black tracking-tighter uppercase leading-none font-sans text-center select-none pointer-events-none bg-linear-to-b from-stone-800/60 via-stone-800/22 to-transparent bg-clip-text text-transparent p-1 whitespace-nowrap">
+          <h2 className="text-[18vw] xl:text-[220px] 2xl:text-[260px] font-black tracking-tighter uppercase leading-none font-sans text-center select-none pointer-events-none bg-linear-to-b from-stone-800/80 via-stone-800/50 to-transparent bg-clip-text text-transparent p-1 whitespace-nowrap">
             SERVD
           </h2>
         </div>
