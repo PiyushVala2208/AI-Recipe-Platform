@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { Cookie, LayoutDashboardIcon, Refrigerator, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import HowToCookModal from "./HowToCookModal";
@@ -39,7 +39,6 @@ export default async function Header() {
           <HowToCookModal />
 
           <SignedIn>
-            {/* Pricing Modal with Built-in Trigger */}
             {user && (
               <PricingModal subscriptionTier={user.subscriptionTier}>
                 <Badge
