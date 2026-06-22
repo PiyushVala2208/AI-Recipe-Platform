@@ -132,8 +132,7 @@ export async function getOrGenerateRecipe(formData) {
 
     // Step 2: Recipe doesn't exist, generate with Gemini
     console.log("🤖 Recipe not found, generating with Gemini...");
-
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
 You are a professional chef and recipe expert. Generate a detailed recipe for: "${normalizedTitle}"
@@ -343,10 +342,10 @@ Guidelines:
       if (match && match[1]) {
         waitSeconds = Math.ceil(parseFloat(match[1]));
       }
-      throw new Error(`AI rate limit exceeded. Please wait ${waitSeconds} seconds and try again.`);
+      return { success: false, message: `AI rate limit exceeded. Please wait ${waitSeconds} seconds and try again.` };
     }
 
-    throw new Error(error.message || "Failed to load recipe");
+    return { success: false, message: error.message || "Failed to load recipe" };
   }
 }
 
@@ -418,7 +417,7 @@ export async function saveRecipeToCollection(formData) {
     };
   } catch (error) {
     console.error("❌ Error saving recipe to collection:", error);
-    throw new Error(error.message || "Failed to save recipe");
+    return { success: false, message: error.message || "Failed to save recipe" };
   }
 }
 
@@ -483,7 +482,7 @@ export async function removeRecipeFromCollection(formData) {
     };
   } catch (error) {
     console.error("❌ Error removing recipe from collection:", error);
-    throw new Error(error.message || "Failed to remove recipe");
+    return { success: false, message: error.message || "Failed to remove recipe" };
   }
 }
 
@@ -545,8 +544,7 @@ export async function getRecipesByPantryIngredients() {
     const ingredients = pantryData.data.map((item) => item.name).join(", ");
 
     console.log("🥘 Finding recipes for ingredients:", ingredients);
-
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
 You are a professional chef. Given these available ingredients: ${ingredients}
@@ -602,7 +600,7 @@ Rules:
     };
   } catch (error) {
     console.error("❌ Error in getRecipesByPantryIngredients:", error);
-    throw new Error(error.message || "Failed to get recipe suggestions");
+    return { success: false, message: error.message || "Failed to get recipe suggestions" };
   }
 }
 
@@ -643,6 +641,6 @@ export async function getSavedRecipes() {
     };
   } catch (error) {
     console.error("Error fetching saved recipes:", error);
-    throw new Error(error.message || "Failed to load saved recipes");
+    return { success: false, message: error.message || "Failed to load saved recipes" };
   }
 }

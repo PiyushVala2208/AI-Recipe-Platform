@@ -9,11 +9,37 @@ const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 const isNetworkFetchError = (error) =>
   error instanceof TypeError && error.message.includes("fetch failed");
 
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) {
+        return response;
+      }
+      // Retry on transient server errors (5xx)
+      if (response.status >= 500 && i < retries - 1) {
+        console.warn(`⚠️ Strapi returned ${response.status}. Retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2;
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (i < retries - 1) {
+        console.warn(`⚠️ Fetch failed: ${error.message}. Retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2;
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
 export const checkUser = async () => {
   const user = await currentUser();
 
   if (!user) {
-    console.log("No user found");
     return null;
   }
 
@@ -26,7 +52,7 @@ export const checkUser = async () => {
 
   try {
     // Check if user exists in Strapi
-    const existingUserResponse = await fetch(
+    const existingUserResponse = await fetchWithRetry(
       `${STRAPI_URL}/api/users?filters[clerkId][$eq]=${user.id}`,
       {
         headers: {
@@ -38,8 +64,7 @@ export const checkUser = async () => {
 
     if (!existingUserResponse.ok) {
       const errorText = await existingUserResponse.text();
-      console.warn("Strapi error response:", errorText);
-      return null;
+      throw new Error(`Strapi error response: ${errorText}`);
     }
 
     const existingUserData = await existingUserResponse.json();
@@ -49,7 +74,7 @@ export const checkUser = async () => {
 
       // Update subscription tier if changed
       if (existingUser.subscriptionTier !== subscriptionTier) {
-        await fetch(`${STRAPI_URL}/api/users/${existingUser.id}`, {
+        await fetchWithRetry(`${STRAPI_URL}/api/users/${existingUser.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -63,7 +88,7 @@ export const checkUser = async () => {
     }
 
     // Get authenticated role
-    const rolesResponse = await fetch(
+    const rolesResponse = await fetchWithRetry(
       `${STRAPI_URL}/api/users-permissions/roles`,
       {
         headers: {
@@ -78,8 +103,7 @@ export const checkUser = async () => {
     );
 
     if (!authenticatedRole) {
-      console.warn("Authenticated role not found");
-      return null;
+      throw new Error("Authenticated role not found in Strapi");
     }
 
     const userData = {
@@ -97,7 +121,7 @@ export const checkUser = async () => {
       subscriptionTier,
     };
 
-    const newUserResponse = await fetch(`${STRAPI_URL}/api/users`, {
+    const newUserResponse = await fetchWithRetry(`${STRAPI_URL}/api/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,15 +133,13 @@ export const checkUser = async () => {
     if (!newUserResponse.ok) {
       const errorText = await newUserResponse.text();
       console.warn("Error creating user:", errorText);
-      return null;
+      throw new Error(`Strapi create user error: ${errorText}`);
     }
 
     const newUser = await newUserResponse.json();
     return newUser;
   } catch (error) {
-    if (!isNetworkFetchError(error)) {
-      console.warn("checkUser skipped user sync:", error.message);
-    }
+    console.error("checkUser error:", error);
     return null;
   }
 };
