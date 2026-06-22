@@ -63,8 +63,8 @@ export const checkUser = async () => {
     );
 
     if (!existingUserResponse.ok) {
-      const errorText = await existingUserResponse.text();
-      throw new Error(`Strapi error response: ${errorText}`);
+      console.warn(`Strapi is currently unavailable (Status: ${existingUserResponse.status}). Falling back to logged-out state.`);
+      return null;
     }
 
     const existingUserData = await existingUserResponse.json();
@@ -103,7 +103,8 @@ export const checkUser = async () => {
     );
 
     if (!authenticatedRole) {
-      throw new Error("Authenticated role not found in Strapi");
+      console.warn("Authenticated role not found in Strapi. Falling back to logged-out state.");
+      return null;
     }
 
     const userData = {
@@ -132,14 +133,14 @@ export const checkUser = async () => {
 
     if (!newUserResponse.ok) {
       const errorText = await newUserResponse.text();
-      console.warn("Error creating user:", errorText);
-      throw new Error(`Strapi create user error: ${errorText}`);
+      console.warn("Error creating user in Strapi:", errorText);
+      return null;
     }
 
     const newUser = await newUserResponse.json();
     return newUser;
   } catch (error) {
-    console.error("checkUser error:", error);
+    console.warn("checkUser encountered a network or server issue:", error.message);
     return null;
   }
 };
